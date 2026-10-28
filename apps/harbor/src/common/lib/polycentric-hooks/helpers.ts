@@ -84,7 +84,7 @@ export type PostData = {
   /** Our estimation for how many reposts this post has. */
   repostCount?: number;
 
-  /** Our estimation for how many quoutes this post has. */
+  /** Our estimation for how many quotes this post has. */
   quoteCount?: number;
 
   /** Our estimation of the per-emoji reaction breakdown, most popular first. */
@@ -430,10 +430,6 @@ export function hexToBytes(hex: string): Uint8Array {
     bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
   }
   return bytes;
-}
-
-export function pubkeyStr(key: v2.PublicKey): string {
-  return Array.from(key.key ?? new Uint8Array()).join(',');
 }
 
 export function publicKeyToString(key: v2.PublicKey): string {

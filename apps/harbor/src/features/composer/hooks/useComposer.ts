@@ -18,7 +18,6 @@ import {
   feedQueryKeys,
   injectPostIntoFeedCache,
   injectReplyIntoThreadCache,
-  addQuoteIntoThreadCache,
   threadQueryKey,
 } from '@/src/features/feed/hooks/feedCache';
 import {
@@ -36,7 +35,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { isWeb } from '@/src/common/util/platform';
 import { useComposerStore } from './useComposerStore';
-import { rewriteIdentityMentions } from '../utils/rewriteIdentityMentions';
+import { rewriteMentions } from '../utils/rewriteMentions';
 import { useLinkPreview } from './useLinkPreview';
 import {
   ImageImportError,
@@ -311,7 +310,7 @@ export function useComposer({
       const link = await resolveLinkForPost();
 
       const post: v2.Post = {
-        text: rewriteIdentityMentions(
+        text: rewriteMentions(
           text.trim(),
           useComposerStore.getState().mentions,
         ),
@@ -482,15 +481,18 @@ function injectLocally(
     injectReplyIntoThreadCache(bundle);
     alterPostReplyCount(threadQueryKey(replyTo.id), replyTo.id, 1);
     alterPostReplyCount(feedQueryKeys.following(identity), replyTo.id, 1);
-    alterPostReplyCount(feedQueryKeys.identity(identity), replyTo.id, 1);
+    alterPostReplyCount(
+      feedQueryKeys.identity(replyTo.identity),
+      replyTo.id,
+      1,
+    );
     alterPostReplyCount(feedQueryKeys.explore(identity), replyTo.id, 1);
   }
 
   if (quoted) {
-    addQuoteIntoThreadCache(bundle);
     alterPostQuoteCount(threadQueryKey(quoted.id), quoted.id, 1);
     alterPostQuoteCount(feedQueryKeys.following(identity), quoted.id, 1);
-    alterPostQuoteCount(feedQueryKeys.identity(identity), quoted.id, 1);
+    alterPostQuoteCount(feedQueryKeys.identity(quoted.identity), quoted.id, 1);
     alterPostQuoteCount(feedQueryKeys.explore(identity), quoted.id, 1);
   }
 

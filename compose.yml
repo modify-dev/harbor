@@ -43,8 +43,6 @@ services:
       - HARBOR_SCRAPER_URL=${HARBOR_SCRAPER_URL:-http://scraper:8855}
       # Accepted JWT audiences (emulator needs 10.0.2.2). Defaults to SERVER_NAME.
       - HARBOR_ALLOW_HOSTS=${HARBOR_ALLOW_HOSTS:-http://localhost:3000}
-      # Test hook only (see integration-server.sh); unset in real deployments.
-      - HARBOR_ALIAS_TEST_ORIGIN=${HARBOR_ALIAS_TEST_ORIGIN:-}
     # On both the shared app network and the isolated scraper link, so it can
     # talk to postgres/kafka/etc. AND to the scraper.
     networks:
@@ -160,6 +158,36 @@ services:
         condition: service_started
       server:
         condition: service_started
+
+  otlp:
+    profiles:
+      - otlp
+    build:
+      context: .
+      dockerfile: services/otlp/Dockerfile
+    ports:
+      - ${HARBOR_OTLP_PORT:-3003}:3003
+    environment:
+      - RUST_LOG=debug
+      # Accepted JWT audiences: the URL the app uses for EXPO_PUBLIC_HARBOR_OTLP_URL.
+      - HARBOR_ALLOW_HOSTS=${HARBOR_OTLP_ALLOW_HOSTS:-http://localhost:3003}
+      - HARBOR_QUERY_SERVERS=${HARBOR_QUERY_SERVERS:-http://server:3000}
+      - HARBOR_VICTORIA_LOGS_URL=${HARBOR_VICTORIA_LOGS_URL:-http://victorialogs:9428}
+    depends_on:
+      server:
+        condition: service_started
+      victorialogs:
+        condition: service_started
+
+  victorialogs:
+    profiles:
+      - otlp
+    image: victoriametrics/victoria-logs:v1.53.0@sha256:251121fa882af99b95ba0c230a4a2f412ea602d2698c64a96c58dc9842bb755d
+    command: ['-storageDataPath=/data']
+    volumes:
+      - victorialogs-data:/data
+    ports:
+      - ${HARBOR_VICTORIA_LOGS_PORT:-9428}:9428
 
   rustfs:
     image: rustfs/rustfs:latest@sha256:ed9210d6411d77ffceb70d94b964a3cb7d225983368bc25bebe01e995293dcc2
@@ -285,3 +313,4 @@ volumes:
   postgres-data:
   rustfs-data:
   kafka-data:
+  victorialogs-data:
