@@ -222,6 +222,7 @@ overrides:
 patchedDependencies:
   '@bsky.app/react-native-uitextview@2.7.1': 3018f282816ac3aa23987aae0ec8d9d485a9ee960e89daaa17be5ac0cfa44ffb
   '@rn-primitives/hooks@1.5.2': d7f36dfa2e61a973ee612194f6624f4e0f3f55db652e629f1ed5e5dddd8b1b78
+  expo-image-manipulator@58.0.16: 80da2ab843092e2625b0d2015c6338105b3e6c14d0e0e97bf7fbc038adc5afe2
   react-native-safe-area-context@5.10.1: 086263d8fa3b01fc14378c0bece3a7cdfbd5f937e9337b0c18863d96294ea038
   react-remove-scroll@2.7.2: e76968a09dcd0466b9527adb861f3386e4896bdbe7be22205007ea875abc8ba4
 
@@ -316,6 +317,9 @@ importers:
       '@react-native-async-storage/async-storage':
         specifier: ^2.2.0
         version: 2.2.0(react-native@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))
+      '@react-native-community/datetimepicker':
+        specifier: 9.2.1
+        version: 9.2.1(0369df9bd959a733f1c64c03f20d4aac)
       '@react-native-documents/picker':
         specifier: ^12.0.2
         version: 12.0.2(react-native@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
@@ -384,7 +388,7 @@ importers:
         version: 58.0.18(26996239ff28f192d408ceed058913d9)
       expo-image-manipulator:
         specifier: ~58.0.16
-        version: 58.0.16(0369df9bd959a733f1c64c03f20d4aac)
+        version: 58.0.16(patch_hash=80da2ab843092e2625b0d2015c6338105b3e6c14d0e0e97bf7fbc038adc5afe2)(0369df9bd959a733f1c64c03f20d4aac)
       expo-image-picker:
         specifier: ~58.0.10
         version: 58.0.10(f4cb0030e0603a5a4a40396ad71a2c44)
@@ -4757,6 +4761,19 @@ packages:
     resolution: {integrity: sha512-gvRvjR5JAaUZF8tv2Kcq/Gbt3JHwbKFYfmb445rhOj6NUMx3qPLixmDx5pZAyb9at1bYvJ4/eTUipU5aki45xw==}
     peerDependencies:
       react-native: ^0.0.0-0 || >=0.65 <1.0
+
+  '@react-native-community/datetimepicker@9.2.1':
+    resolution: {integrity: sha512-P2dir8EcPYuS6g7N/E4jImugB99h2+e1kzNX6Ihg+2T2v5IZ5dB+4afLisG6rdua4YZ1mADYCZ2iqI34sPjIKA==}
+    peerDependencies:
+      expo: '>=52.0.0'
+      react: '*'
+      react-native: '*'
+      react-native-windows: '*'
+    peerDependenciesMeta:
+      expo:
+        optional: true
+      react-native-windows:
+        optional: true
 
   '@react-native-documents/picker@12.0.2':
     resolution: {integrity: sha512-tiaPQjSdsaCkKw/N8XB+DXfhOJ+KJ1OYDliBGoBHEqLI7AhUsSPhn8fRI/gHs7hpYzqOBKf+em9MUrPIA9mlWA==}
@@ -19093,6 +19110,23 @@ snapshots:
       merge-options: 3.0.4
       react-native: 0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
 
+  '@react-native-community/datetimepicker@9.2.1(0369df9bd959a733f1c64c03f20d4aac)':
+    dependencies:
+      invariant: 2.2.4
+      react: 19.3.0
+      react-native: 0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
+    optionalDependencies:
+      expo: 58.0.22(41d93b195ce3db3eda1596eac11de455)
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@expo/dom-webview'
+      - '@expo/log-box'
+      - '@expo/metro-runtime'
+      - expo-router
+      - react-native-webview
+      - react-native-worklets
+      - typescript
+
   '@react-native-documents/picker@12.0.2(react-native@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)':
     dependencies:
       react: 19.3.0
@@ -23015,7 +23049,7 @@ snapshots:
       - react-native-worklets
       - typescript
 
-  expo-image-manipulator@58.0.16(0369df9bd959a733f1c64c03f20d4aac):
+  expo-image-manipulator@58.0.16(patch_hash=80da2ab843092e2625b0d2015c6338105b3e6c14d0e0e97bf7fbc038adc5afe2)(0369df9bd959a733f1c64c03f20d4aac):
     dependencies:
       expo: 58.0.22(41d93b195ce3db3eda1596eac11de455)
       expo-image-loader: 58.0.3(f4cb0030e0603a5a4a40396ad71a2c44)
