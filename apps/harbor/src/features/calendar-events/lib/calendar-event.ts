@@ -10,6 +10,7 @@ import {
   TIME_FORMAT,
   TIME_PATTERN,
 } from '@/src/common/components/form/DateTimeField/lib/date-time-value';
+import { HARBOR_APP_URL, Routes } from '@/src/common/constants';
 import type { v2 } from '@polycentric/react-native-sdk';
 import type { Place } from './geocoder-api';
 
@@ -27,6 +28,8 @@ export type CalendarEventData = {
   startAt: number;
   endAt?: number;
   allDay: boolean;
+  /** IANA timezone of the venue */
+  timezone?: string;
   location?: v2.CalendarEventLocation;
   image?: v2.ImageSet;
   /** Named hosts. Empty if there's no host */
@@ -62,6 +65,7 @@ export function decodeCalendarEventBundle(
     startAt: Number(content.startAt),
     endAt: content.endAt === undefined ? undefined : Number(content.endAt),
     allDay: content.allDay,
+    timezone: content.timezone,
     location: content.location,
     image: content.image,
     // Older builds don't have hosts
@@ -328,4 +332,9 @@ export function isWebUrl(
   url: string,
 ): url is `https://${string}` | `http://${string}` {
   return /^https?:\/\//i.test(url);
+}
+
+/** Public link to the event */
+export function calendarEventLink(event: CalendarEventData): string {
+  return `${HARBOR_APP_URL}${Routes.tabs.calendarEvent(event.identity, event.keyFingerprint, event.sequence)}`;
 }

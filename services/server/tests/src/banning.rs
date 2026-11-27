@@ -1,6 +1,5 @@
 //! Tests for banned identities.
 
-use std::sync::Once;
 use std::time::Duration;
 
 use tokio::time::sleep;
@@ -155,7 +154,6 @@ async fn banning_removes_posts() {
 }
 
 #[tokio::test]
-#[ignore = "fails on the CI"]
 async fn banning_removes_posts_with_images() {
     let (banned_post_image, banned_post_image_bytes) = random_image();
     let banned_post_image_blob = banned_post_image.blob.clone().unwrap();
@@ -178,7 +176,6 @@ async fn banning_removes_posts_with_images() {
 }
 
 #[tokio::test]
-#[ignore = "fails on the CI"]
 async fn banning_removes_verification_claims_with_images() {
     let (banned_verification_image, banned_verification_image_bytes) =
         random_image();
@@ -204,7 +201,6 @@ async fn banning_removes_verification_claims_with_images() {
 }
 
 #[tokio::test]
-#[ignore = "fails on the CI"]
 async fn banning_removes_profile_updates_with_avatars_and_banners() {
     let (banned_avatar_image, banned_avatar) = random_image();
     let banned_avatar_blob = banned_avatar_image.blob.clone().unwrap();
@@ -382,17 +378,6 @@ async fn set_ban_status(identity: &str, banned: bool) {
 }
 
 async fn prune_blob(blobs: &[Blob]) {
-    // Build the admin CLI tool once and use the created binary below.
-    static BUILD: Once = Once::new();
-    BUILD.call_once(|| {
-        std::process::Command::new("cargo")
-            .args(["build", "--quiet", "--bin", "server"])
-            .current_dir("..")
-            .status()
-            .expect("failed to build server");
-    });
-
-    let mut output;
     let mut i = 0;
     loop {
         i += 1;
@@ -409,20 +394,20 @@ async fn prune_blob(blobs: &[Blob]) {
             return;
         }
 
-        output = tokio::process::Command::new("../../target/debug/server")
-            .args(["prune-blobs", "--grace-period-secs", "0"])
-            .current_dir("..")
-            .stdin(std::process::Stdio::null())
-            .output()
-            .await
-            .expect("failed to prune blobs via admin CLI");
+        let output =
+            run_admin_cli(&["prune-blobs", "--grace-period-secs", "0"]).await;
 
-        if String::from_utf8_lossy(&output.stdout).contains("skip") {
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        if stdout.contains("skip") {
             // If we skipped the pruning (e.g. when another process is holding
             // the lock) we need to try again to ensure the blob(s) the caller
             // cares about are pruned.
             sleep(Duration::from_millis(50)).await;
             continue;
+        }
+
+        if stdout.contains("WARN") || stdout.contains("ERROR") {
+            break;
         }
 
         if output.status.success() {
@@ -440,12 +425,5 @@ async fn prune_blob(blobs: &[Blob]) {
         }
     }
 
-    use std::io::Write;
-    let stdout = std::io::stdout();
-    let mut stdout = stdout.lock();
-    let stderr = std::io::stderr();
-    let mut stderr = stderr.lock();
-    _ = stdout.write_all(&output.stdout);
-    _ = stderr.write_all(&output.stderr);
-    panic!("running prune blob admin CLI failed");
+    panic!("running admin CLI to prune blobs failed");
 }
